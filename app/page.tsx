@@ -1,28 +1,28 @@
 import Link from "next/link";
 import { clients } from "@/config/clients";
 import { Header } from "@/components/Header";
+import { Panel } from "@/components/ui";
 
 // Internal index of client dashboards. Hide this once client access links exist.
 export default function Home() {
   return (
     <>
-      <Header title="Kunden-Dashboards" />
-      <main className="mx-auto max-w-6xl px-6 py-10">
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {clients.map((c) => (
-            <li key={c.slug}>
-              <Link
-                href={`/${c.slug}`}
-                className="block rounded-xl border border-p8-navy/10 bg-white p-5 shadow-sm transition hover:border-p8-magenta/40 hover:shadow"
-              >
-                <p className="text-lg font-semibold">{c.name}</p>
-                <p className="mt-1 text-sm text-p8-navy/60">
-                  {c.groups.length} {c.groups.length === 1 ? "Kampagne" : "Kampagnen"}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+      <Header subtitle="P8 · Alle Kunden" />
+      <main className="mx-auto max-w-[1440px] px-6 py-6 lg:px-10">
+        <Panel title="Kunden" subtitle={`${clients.length} Dashboards`}>
+          <ul className="border-t border-line">
+            {clients.map((c) => (
+              <li key={c.slug} className="border-b border-line last:border-0">
+                <Link href={`/${c.slug}`} className="flex items-center justify-between px-5 py-4 hover:bg-page/50">
+                  <span className="font-semibold">{c.name}</span>
+                  <span className="text-sm text-muted">
+                    {c.groups.length} {c.groups.length === 1 ? "Kampagne" : "Kampagnen"} →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Panel>
       </main>
     </>
   );

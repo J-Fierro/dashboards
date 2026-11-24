@@ -57,6 +57,10 @@ export function getClient(slug: string) {
   return clients.find((c) => c.slug === slug);
 }
 
+export function sheetUrl(sheet: LeadSheet) {
+  return `https://docs.google.com/spreadsheets/d/${sheet.spreadsheetId}/edit`;
+}
+
 export function getGroup(client: ClientConfig, slug: string) {
   return client.groups.find((g) => g.slug === slug);
 }

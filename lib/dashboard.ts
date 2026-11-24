@@ -59,6 +59,7 @@ export async function getOverview(client: ClientConfig, range: DateRange) {
     linkClicks,
     linkCtr: impressions > 0 ? (linkClicks / impressions) * 100 : 0,
     cpm: impressions > 0 ? (spend / impressions) * 1000 : 0,
+    dailyBudget: rows.some((r) => r.dailyBudget != null) ? sum((r) => r.dailyBudget ?? 0) : null,
     termine: hasTermine ? termine : null,
     costPerTermin: hasTermine && termine > 0 ? spend / termine : null,
     terminRate: hasTermine && leads > 0 ? (termine / leads) * 100 : null,

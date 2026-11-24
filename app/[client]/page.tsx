@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { getClient } from "@/config/clients";
-import { DateRangePicker } from "@/components/DateRangePicker";
+import { getClient, sheetUrl } from "@/config/clients";
 import { Header } from "@/components/Header";
-import { KpiTile } from "@/components/KpiTile";
-import { SourceNote } from "@/components/SourceNote";
-import { StatusBadge } from "@/components/StatusBadge";
+import { SourceBadges, sourceLabel } from "@/components/SourceBadges";
+import { Footer, KpiCard, Panel, Status, Th } from "@/components/ui";
 import { getOverview } from "@/lib/dashboard";
 import { resolveRange } from "@/lib/dates";
-import { fmtDec, fmtEur, fmtInt, fmtPct } from "@/lib/format";
+import { fmtEur, fmtInt, fmtPct } from "@/lib/format";
 import { fixedRange } from "@/lib/sources";
 
 export const dynamic = "force-dynamic";
@@ -19,81 +16,117 @@ type Props = {
   searchParams: Promise<{ preset?: string; since?: string; until?: string }>;
 };
 
+const rate = (t: number | null, l: number) => (t != null && l > 0 ? (t / l) * 100 : null);
+
 export default async function ClientOverview({ params, searchParams }: Props) {
   const { client: slug } = await params;
   const client = getClient(slug);
   if (!client) notFound();
 
+  const sp = await searchParams;
   const fixed = fixedRange(client);
-  const range = fixed ?? resolveRange(await searchParams);
+  const range = fixed ?? resolveRange(sp);
   const { rows, totals, termineSource } = await getOverview(client, range);
-  const qs = new URLSearchParams(await searchParams).toString();
+  const qs = new URLSearchParams(sp).toString();
+  const subtitle = `P8 · ${client.name}`;
+  const n = rows.length;
 
   return (
     <>
-      <Header title={client.name} back={{ href: "/", label: "Alle Kunden" }} />
-      <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold">Übersicht</h2>
-          <Suspense>
-            <DateRangePicker range={range} disabled={!!fixed} />
-          </Suspense>
-        </div>
-
-        <SourceNote fixed={fixed} termineSource={termineSource} />
-
-        <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <KpiTile label="Ausgaben" value={fmtEur(totals.spend)} />
-          <KpiTile label="Leads" value={fmtInt(totals.leads)} accent />
-          <KpiTile label="Kosten pro Lead" value={fmtEur(totals.costPerLead)} />
-          <KpiTile label="Termine" value={fmtInt(totals.termine)} accent />
-          <KpiTile label="Kosten pro Termin" value={fmtEur(totals.costPerTermin)} />
-          <KpiTile label="Termin-Quote" value={fmtPct(totals.terminRate)} hint="Termine / Leads" />
-          <KpiTile label="Impressionen" value={fmtInt(totals.impressions)} hint={`CPM ${fmtEur(totals.cpm)}`} />
-          <KpiTile label="Link-CTR" value={fmtPct(totals.linkCtr)} hint={`${fmtInt(totals.linkClicks)} Link-Klicks`} />
+      <Header subtitle={subtitle} range={range} rangeLocked={!!fixed} />
+      <main className="mx-auto max-w-[1440px] space-y-5 px-6 py-6 lg:px-10">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <KpiCard label="Leads gesamt" value={fmtInt(totals.leads)} sub={`Ø ${fmtEur(totals.costPerLead)} pro Lead`} accent="violet" />
+          <KpiCard
+            label="Ausgegeben"
+            value={fmtEur(totals.spend)}
+            sub={totals.dailyBudget != null ? `Tagesbudget ${fmtEur(totals.dailyBudget)}` : undefined}
+            accent="emerald"
+          />
+          <KpiCard label="Impressionen" value={fmtInt(totals.impressions)} sub={`Ø CPM ${fmtEur(totals.cpm)}`} accent="fuchsia" />
+          <KpiCard label="Ø CTR (Link)" value={fmtPct(totals.linkCtr)} sub="Link-Klick-Rate" accent="amber" />
         </section>
 
-        <section className="overflow-x-auto rounded-xl border border-p8-navy/10 bg-white shadow-sm">
-          <table className="w-full text-sm">
-            <thead className="border-b border-p8-navy/10 text-left text-xs uppercase tracking-wide text-p8-navy/55">
-              <tr>
-                <th className="px-4 py-3">Kampagne</th>
-                <th className="px-3 py-3 text-right">Leads</th>
-                <th className="px-3 py-3 text-right">CPL</th>
-                <th className="px-3 py-3 text-right">Termine</th>
-                <th className="px-3 py-3 text-right">Ausgaben</th>
-                <th className="px-3 py-3 text-right">Tagesbudget</th>
-                <th className="px-3 py-3 text-right">Reichweite</th>
-                <th className="px-3 py-3 text-right">Frequenz</th>
-                <th className="px-3 py-3 text-right">Link-CTR</th>
-              </tr>
-            </thead>
-            <tbody className="tabular divide-y divide-p8-navy/5">
-              {rows.map((r) => (
-                <tr key={r.slug} className="hover:bg-surface">
-                  <td className="px-4 py-3">
-                    <Link href={`/${client.slug}/${r.slug}${qs ? `?${qs}` : ""}`} className="font-medium hover:text-p8-magenta">
-                      {r.label} →
-                    </Link>
-                    <div className="mt-0.5 flex items-center gap-2 text-xs text-p8-navy/50">
-                      <span>{r.metaName}</span>
-                      <StatusBadge status={r.status} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3 text-right">{fmtInt(r.metrics.leads)}</td>
-                  <td className="px-3 py-3 text-right">{fmtEur(r.metrics.costPerLead)}</td>
-                  <td className="px-3 py-3 text-right font-semibold text-p8-magenta">{fmtInt(r.termine)}</td>
-                  <td className="px-3 py-3 text-right">{fmtEur(r.metrics.spend)}</td>
-                  <td className="px-3 py-3 text-right">{fmtEur(r.dailyBudget)}</td>
-                  <td className="px-3 py-3 text-right">{fmtInt(r.metrics.reach)}</td>
-                  <td className="px-3 py-3 text-right">{fmtDec(r.metrics.frequency)}</td>
-                  <td className="px-3 py-3 text-right">{fmtPct(r.metrics.linkCtr)}</td>
+        <Panel
+          title="Kampagnen-Übersicht"
+          subtitle={
+            <>
+              {n} {n === 1 ? "Kampagne" : "Kampagnen"} · Meta Ads + Google Sheets ·{" "}
+              <span className="text-violet">Kampagne anklicken für Details</span>
+            </>
+          }
+          badges={<SourceBadges mock={!!fixed} />}
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-y border-line bg-page/60">
+                <tr>
+                  <Th label="Kampagne" align="left" />
+                  <Th label="Leads" />
+                  <Th label="Kosten / Ergebnis" sub="€ pro Lead" />
+                  <Th label="Termine" sub="Terminbuchungen" />
+                  <Th label="Terminquote" sub="Termine / Leads" />
+                  <Th label="Budget" sub="€ täglich" />
+                  <Th label="Ausgegeben" sub="€ im Zeitraum" />
+                  <Th label="CTR (Link)" sub="Link-Klick-Rate" />
+                  <Th label="Link-Klicks" />
+                  <Th label="Leadliste" />
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+              </thead>
+              <tbody className="tabular">
+                {rows.map((r) => {
+                  const sheet = client.groups.find((g) => g.slug === r.slug)?.leadSheet;
+                  return (
+                    <tr key={r.slug} className="border-b border-line last:border-0 hover:bg-page/50">
+                      <td className="px-3 py-3.5">
+                        <Link href={`/${client.slug}/${r.slug}${qs ? `?${qs}` : ""}`} className="font-semibold hover:text-violet">
+                          {r.label}
+                        </Link>
+                        <div className="mt-0.5 flex items-center gap-2 text-xs text-muted">
+                          <span>{r.metaName}</span>
+                          <Status status={r.status} />
+                        </div>
+                      </td>
+                      <td className="px-3 py-3.5 text-right">{fmtInt(r.metrics.leads)}</td>
+                      <td className="px-3 py-3.5 text-right">{fmtEur(r.metrics.costPerLead)}</td>
+                      <td className="px-3 py-3.5 text-right">{fmtInt(r.termine)}</td>
+                      <td className="px-3 py-3.5 text-right">{fmtPct(rate(r.termine, r.metrics.leads))}</td>
+                      <td className="px-3 py-3.5 text-right">{fmtEur(r.dailyBudget)}</td>
+                      <td className="px-3 py-3.5 text-right">{fmtEur(r.metrics.spend)}</td>
+                      <td className="px-3 py-3.5 text-right">{fmtPct(r.metrics.linkCtr)}</td>
+                      <td className="px-3 py-3.5 text-right">{fmtInt(r.metrics.linkClicks)}</td>
+                      <td className="px-3 py-3.5 text-right">
+                        {sheet ? (
+                          <a href={sheetUrl(sheet)} target="_blank" rel="noreferrer" className="text-violet hover:underline">
+                            Öffnen ↗
+                          </a>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot className="tabular bg-ink text-white">
+                <tr className="font-semibold">
+                  <td className="px-3 py-4">GESAMT</td>
+                  <td className="px-3 py-4 text-right">{fmtInt(totals.leads)}</td>
+                  <td className="px-3 py-4 text-right">{fmtEur(totals.costPerLead)}</td>
+                  <td className="px-3 py-4 text-right">{fmtInt(totals.termine)}</td>
+                  <td className="px-3 py-4 text-right">{fmtPct(totals.terminRate)}</td>
+                  <td className="px-3 py-4 text-right">{fmtEur(totals.dailyBudget)}</td>
+                  <td className="px-3 py-4 text-right">{fmtEur(totals.spend)}</td>
+                  <td className="px-3 py-4 text-right">{fmtPct(totals.linkCtr)}</td>
+                  <td className="px-3 py-4 text-right">{fmtInt(totals.linkClicks)}</td>
+                  <td className="px-3 py-4" />
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </Panel>
       </main>
+      <Footer subtitle={client.name} source={sourceLabel(!!fixed, termineSource)} />
     </>
   );
 }
