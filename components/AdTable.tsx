@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { fmtDec, fmtEur, fmtInt, fmtPct } from "@/lib/format";
 import type { AdRow, Metrics } from "@/lib/types";
-import { Status, Th } from "./ui";
+import { Status, Th, td } from "./ui";
 
 type Key = "name" | "leads" | "costPerLead" | "termine" | "terminRate" | "spend" | "reach" | "frequency" | "linkCtr" | "linkClicks";
 
@@ -11,23 +11,23 @@ const rate = (t: number | null, l: number) => (t != null && l > 0 ? (t / l) * 10
 
 const COLS: { key: Key; label: string; sub: string; get: (m: Metrics, t: number | null) => number | null; fmt: (v: number | null) => string }[] = [
   { key: "leads", label: "Leads", sub: "", get: (m) => m.leads, fmt: fmtInt },
-  { key: "costPerLead", label: "Kosten / Ergebnis", sub: "€ pro Lead", get: (m) => m.costPerLead, fmt: fmtEur },
-  { key: "termine", label: "Termine", sub: "Terminbuchungen", get: (_, t) => t, fmt: fmtInt },
+  { key: "costPerLead", label: "Kosten pro Lead", sub: "", get: (m) => m.costPerLead, fmt: fmtEur },
+  { key: "termine", label: "Termine", sub: "laut Lead-Liste", get: (_, t) => t, fmt: fmtInt },
   { key: "terminRate", label: "Terminquote", sub: "Termine / Leads", get: (m, t) => rate(t, m.leads), fmt: fmtPct },
   { key: "spend", label: "Ausgegeben", sub: "€ im Zeitraum", get: (m) => m.spend, fmt: fmtEur },
   { key: "reach", label: "Reichweite", sub: "Personen", get: (m) => m.reach, fmt: fmtInt },
   { key: "frequency", label: "Frequenz", sub: "Ø pro Person", get: (m) => m.frequency, fmt: fmtDec },
-  { key: "linkCtr", label: "CTR (Link)", sub: "Link-Klick-Rate", get: (m) => m.linkCtr, fmt: fmtPct },
+  { key: "linkCtr", label: "Link-CTR", sub: "Klicks / Impressionen", get: (m) => m.linkCtr, fmt: fmtPct },
   { key: "linkClicks", label: "Link-Klicks", sub: "", get: (m) => m.linkClicks, fmt: fmtInt },
 ];
 
 function Thumb({ name, url }: { name: string; url: string | null }) {
   if (url) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={url} alt="" className="h-11 w-11 shrink-0 rounded-md object-cover" />;
+    return <img src={url} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" />;
   }
   return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-thumb-from to-thumb-to text-[11px] font-semibold text-white">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-plum to-teal text-[11px] font-semibold text-white">
       {name.replace(/[^a-z0-9]/gi, "").slice(-2).toUpperCase() || "AD"}
     </div>
   );
@@ -54,22 +54,22 @@ export function AdTable({ ads, total, totalTermine }: { ads: AdRow[]; total: Met
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="border-y border-line bg-page/60">
+        <thead className="border-y border-line">
           <tr>
             <Th label="Anzeige" align="left">
-              <button onClick={() => click("name")} className="uppercase hover:text-violet">Anzeige{arrow("name")}</button>
+              <button onClick={() => click("name")} className="hover:text-plum">Anzeige{arrow("name")}</button>
             </Th>
             {COLS.map((c) => (
               <Th key={c.key} label={c.label} sub={c.sub || undefined}>
-                <button onClick={() => click(c.key)} className="whitespace-nowrap uppercase hover:text-violet">{c.label}{arrow(c.key)}</button>
+                <button onClick={() => click(c.key)} className="whitespace-nowrap hover:text-plum">{c.label}{arrow(c.key)}</button>
               </Th>
             ))}
           </tr>
         </thead>
         <tbody className="tabular">
           {sorted.map((ad) => (
-            <tr key={ad.id} className="border-b border-line last:border-0 hover:bg-page/50">
-              <td className="px-3 py-3">
+            <tr key={ad.id} className="border-b border-line last:border-0">
+              <td className={td}>
                 <div className="flex items-center gap-3">
                   <Thumb name={ad.name} url={ad.thumbnailUrl} />
                   <div>
@@ -79,16 +79,16 @@ export function AdTable({ ads, total, totalTermine }: { ads: AdRow[]; total: Met
                 </div>
               </td>
               {COLS.map((c) => (
-                <td key={c.key} className="whitespace-nowrap px-3 py-3 text-right">{c.fmt(c.get(ad.metrics, ad.termine))}</td>
+                <td key={c.key} className={`${td} whitespace-nowrap text-right`}>{c.fmt(c.get(ad.metrics, ad.termine))}</td>
               ))}
             </tr>
           ))}
         </tbody>
-        <tfoot className="tabular bg-ink text-white">
+        <tfoot className="tabular border-t-2 border-ink bg-page/70">
           <tr>
-            <td className="px-3 py-4 font-semibold">GESAMT</td>
+            <td className={`${td} font-semibold`}>Gesamt</td>
             {COLS.map((c) => (
-              <td key={c.key} className="whitespace-nowrap px-3 py-4 text-right font-semibold">{c.fmt(c.get(total, totalTermine))}</td>
+              <td key={c.key} className={`${td} whitespace-nowrap text-right font-semibold`}>{c.fmt(c.get(total, totalTermine))}</td>
             ))}
           </tr>
         </tfoot>

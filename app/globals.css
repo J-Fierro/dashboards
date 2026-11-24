@@ -1,25 +1,25 @@
 @import "tailwindcss";
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/public-sans";
 
 @theme {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Public Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
 
-  /* P8 charcoal, same as the logo and the lead sheet headers */
+  /* P8 charcoal (logo and lead-sheet headers) */
   --color-ink: #2b2e34;
-  --color-ink-soft: #3a3e46;
-  --color-page: #f1f1f4;
-  --color-line: #e7e7ec;
-  --color-muted: #8a8d96;
+  --color-ink-soft: #464a53;
+  --color-page: #f3f4f6;
+  --color-line: #e3e5e9;
+  --color-muted: #7b7f88;
 
-  /* KPI accents */
-  --color-violet: #6d28d9;
-  --color-emerald: #10b981;
-  --color-fuchsia: #9333ea;
-  --color-amber: #f59e0b;
+  /* P8 purple and teal: the funnel and ad placeholders run between them */
+  --color-plum: #6d5c90;
+  --color-plum-deep: #4f4170;
+  --color-teal: #2da4c4;
 
-  /* Ad thumbnail placeholder gradient (P8 purple to teal) */
-  --color-thumb-from: #6d5c90;
-  --color-thumb-to: #2da4c4;
+  --color-ok: #2f9e6e;
+  --color-warn: #c98a12;
 }
 
 body {
@@ -28,4 +28,10 @@ body {
 
 .tabular {
   font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-plum);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
