@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets
+.env
+.env.local
+.env.*.local
+*service-account*.json
+
+# raw Ads Manager exports stay local; the converted mock JSON is committed
+data/raw/

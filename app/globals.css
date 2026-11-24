@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/* P8 brand palette */
+@theme {
+  --color-p8-magenta: #b0176a;
+  --color-p8-purple: #6d5c90;
+  --color-p8-navy: #26224f;
+  --color-p8-blue: #4d7dab;
+  --color-p8-teal: #2da4c4;
+  --color-p8-pink: #e889b5;
+  --color-p8-lilac: #d5bbd4;
+  --color-p8-sky: #a5bdd5;
+  --color-p8-aqua: #96d3e1;
+  --color-surface: #f6f5fa;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  @apply bg-surface text-p8-navy antialiased;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

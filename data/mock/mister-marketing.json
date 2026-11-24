@@ -1,0 +1,149 @@
+{
+  "_note": "Generated from Ads Manager CSV exports by scripts/csv-to-mock.mjs. inline_link_clicks is derived from CTR x impressions.",
+  "date_start": "2026-10-25",
+  "date_stop": "2026-11-23",
+  "adsets": [
+    {
+      "id": "120253887564980169",
+      "name": "Neue Videos",
+      "effective_status": "INACTIVE",
+      "daily_budget": "3000",
+      "lifetime_budget": null,
+      "insights": {
+        "date_start": "2026-10-25",
+        "date_stop": "2026-11-23",
+        "spend": "409.31",
+        "impressions": "6771",
+        "reach": "3815",
+        "frequency": "1.774836",
+        "cpm": "60.45045",
+        "inline_link_click_ctr": "1.270123",
+        "inline_link_clicks": "86",
+        "actions": [
+          {
+            "action_type": "leadgen.other",
+            "value": "7"
+          }
+        ],
+        "cost_per_action_type": [
+          {
+            "action_type": "leadgen.other",
+            "value": "58.47285714"
+          }
+        ]
+      }
+    },
+    {
+      "id": "120253887576570169",
+      "name": "Neue Videos - Copy",
+      "effective_status": "INACTIVE",
+      "daily_budget": "3000",
+      "lifetime_budget": null,
+      "insights": {
+        "date_start": "2026-10-25",
+        "date_stop": "2026-11-23",
+        "spend": "402.36",
+        "impressions": "8527",
+        "reach": "3928",
+        "frequency": "2.170825",
+        "cpm": "47.186584",
+        "inline_link_click_ctr": "1.301747",
+        "inline_link_clicks": "111",
+        "actions": [
+          {
+            "action_type": "leadgen.other",
+            "value": "8"
+          }
+        ],
+        "cost_per_action_type": [
+          {
+            "action_type": "leadgen.other",
+            "value": "50.295"
+          }
+        ]
+      }
+    }
+  ],
+  "ads": [
+    {
+      "id": "120253887576500169",
+      "name": "Video_01",
+      "adset_id": "120253887576570169",
+      "effective_status": "NOT_DELIVERING",
+      "thumbnail_url": null,
+      "insights": {
+        "date_start": "2026-10-25",
+        "date_stop": "2026-11-23",
+        "spend": "38.05",
+        "impressions": "649",
+        "reach": "550",
+        "frequency": "1.18",
+        "cpm": "58.628659",
+        "inline_link_click_ctr": "0.46225",
+        "inline_link_clicks": "3",
+        "actions": [],
+        "cost_per_action_type": []
+      }
+    },
+    {
+      "id": "120253887576520169",
+      "name": "Video_02",
+      "adset_id": "120253887576570169",
+      "effective_status": "NOT_DELIVERING",
+      "thumbnail_url": null,
+      "insights": {
+        "date_start": "2026-10-25",
+        "date_stop": "2026-11-23",
+        "spend": "289.34",
+        "impressions": "6923",
+        "reach": "3252",
+        "frequency": "2.128844",
+        "cpm": "41.79402",
+        "inline_link_click_ctr": "1.328904",
+        "inline_link_clicks": "92",
+        "actions": [
+          {
+            "action_type": "leadgen.other",
+            "value": "6"
+          }
+        ],
+        "cost_per_action_type": [
+          {
+            "action_type": "leadgen.other",
+            "value": "48.22333333"
+          }
+        ]
+      }
+    },
+    {
+      "id": "120253887576550169",
+      "name": "Video_03",
+      "adset_id": "120253887576570169",
+      "effective_status": "NOT_DELIVERING",
+      "thumbnail_url": null,
+      "insights": {
+        "date_start": "2026-10-25",
+        "date_stop": "2026-11-23",
+        "spend": "74.97",
+        "impressions": "955",
+        "reach": "571",
+        "frequency": "1.672504",
+        "cpm": "78.502618",
+        "inline_link_click_ctr": "1.675393",
+        "inline_link_clicks": "16",
+        "actions": [
+          {
+            "action_type": "leadgen.other",
+            "value": "2"
+          }
+        ],
+        "cost_per_action_type": [
+          {
+            "action_type": "leadgen.other",
+            "value": "37.485"
+          }
+        ]
+      }
+    }
+  ]
+}
