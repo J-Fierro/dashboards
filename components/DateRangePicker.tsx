@@ -17,7 +17,7 @@ export function DateRangePicker({ range, locked }: { range: DateRange; locked?: 
   const ref = useRef<HTMLDivElement>(null);
 
   const preset = PRESETS.find((p) => p.key === params.get("preset"));
-  const label = locked ? "Export" : preset?.label ?? (params.get("since") ? "Zeitraum" : "Letzte 30 Tage");
+  const label = locked ? "Export-Zeitraum" : preset?.label ?? (params.get("since") ? "Zeitraum" : "Letzte 30 Tage");
 
   useEffect(() => {
     const close = (e: MouseEvent) => ref.current && !ref.current.contains(e.target as Node) && setOpen(false);
@@ -55,13 +55,13 @@ export function DateRangePicker({ range, locked }: { range: DateRange; locked?: 
             <button
               key={p.key}
               onClick={() => go({ preset: p.key })}
-              className={`block w-full rounded px-3 py-2 text-left text-sm hover:bg-page ${preset?.key === p.key ? "font-semibold text-plum" : ""}`}
+              className={`block w-full rounded px-3 py-2 text-left text-sm hover:bg-page ${preset?.key === p.key ? "font-semibold text-violet" : ""}`}
             >
               {p.label}
             </button>
           ))}
           <div className="mt-2 border-t border-line px-1 pt-3">
-            <p className="mb-2 px-2 text-xs font-medium text-muted">Benutzerdefiniert</p>
+            <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Benutzerdefiniert</p>
             <div className="flex gap-2 px-2">
               <input type="date" value={since} max={until} onChange={(e) => setSince(e.target.value)} className="w-full rounded border border-line px-2 py-1 text-sm" />
               <input type="date" value={until} min={since} onChange={(e) => setUntil(e.target.value)} className="w-full rounded border border-line px-2 py-1 text-sm" />

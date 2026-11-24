@@ -1,63 +1,72 @@
 import type { ReactNode } from "react";
-import { fmtDate } from "@/lib/format";
-import type { DateRange } from "@/lib/types";
 
-export function Panel({ title, note, aside, children }: { title: string; note?: ReactNode; aside?: ReactNode; children: ReactNode }) {
+const ACCENTS = {
+  violet: "bg-violet",
+  emerald: "bg-emerald",
+  fuchsia: "bg-fuchsia",
+  amber: "bg-amber",
+} as const;
+
+export function KpiCard({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent: keyof typeof ACCENTS }) {
   return (
-    <section className="rounded-2xl border border-line bg-white">
-      <div className="flex flex-wrap items-end justify-between gap-3 px-6 pt-5 pb-4">
+    <div className="rounded-xl bg-white px-4 py-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">{label}</p>
+      <p className="tabular mt-2 text-[26px] font-bold leading-none">{value}</p>
+      {sub && <p className="mt-2.5 text-[13px] text-muted">{sub}</p>}
+      <div className={`mt-3 h-[3px] w-8 rounded-full ${ACCENTS[accent]}`} />
+    </div>
+  );
+}
+
+export function Panel({ title, subtitle, badges, children }: { title: string; subtitle?: ReactNode; badges?: ReactNode; children: ReactNode }) {
+  return (
+    <section className="overflow-hidden rounded-xl bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+      <div className="flex flex-wrap items-start justify-between gap-3 px-5 py-4">
         <div>
-          <h2 className="font-display text-xl font-semibold tracking-tight">{title}</h2>
-          {note && <p className="mt-0.5 text-sm text-muted">{note}</p>}
+          <h2 className="text-[15px] font-semibold">{title}</h2>
+          {subtitle && <p className="mt-1 text-xs text-muted">{subtitle}</p>}
         </div>
-        {aside}
+        {badges && <div className="flex gap-2">{badges}</div>}
       </div>
       {children}
     </section>
   );
 }
 
-/** Column header with an optional second line saying what the number means. */
-export function Th({ label, sub, align = "right", children }: { label: string; sub?: string; align?: "left" | "right"; children?: ReactNode }) {
+export function Badge({ children, tone = "violet" }: { children: ReactNode; tone?: "violet" | "amber" }) {
+  const cls = tone === "violet" ? "bg-violet/8 text-violet" : "bg-amber/12 text-amber-700";
+  const dot = tone === "violet" ? "bg-violet" : "bg-amber";
   return (
-    <th className={`px-3 pt-3 pb-2.5 align-bottom font-normal first:pl-6 last:pr-6 ${align === "right" ? "text-right" : "text-left"}`}>
-      <div className="text-[13px] font-semibold text-ink">{children ?? label}</div>
-      {sub && <div className="mt-0.5 whitespace-nowrap text-xs text-muted">{sub}</div>}
-    </th>
-  );
-}
-
-export const td = "px-3 py-3.5 first:pl-6 last:pr-6";
-
-export function SourceTag({ mock }: { mock: boolean }) {
-  if (!mock) return null;
-  return (
-    <span className="rounded-full border border-warn/40 bg-warn/8 px-3 py-1 text-xs font-medium text-warn">
-      Testdaten aus dem Ads-Manager-Export
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${cls}`}>
+      <span className={`h-2 w-2 rounded-full ${dot}`} />
+      {children}
     </span>
   );
 }
 
-export function Footer({ source }: { source: string }) {
-  return <footer className="py-10 text-center text-xs text-muted">Daten: {source}. Erstellt von P8 Content Power.</footer>;
+/** Column header with a small explanatory second line, as in the reference dashboard. */
+export function Th({ label, sub, align = "right", children }: { label: string; sub?: string; align?: "left" | "right"; children?: ReactNode }) {
+  return (
+    <th className={`px-3 py-3 align-middle font-normal ${align === "right" ? "text-right" : "text-left"}`}>
+      <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink/80">{children ?? label}</div>
+      {sub && <div className="mt-1 whitespace-nowrap text-[11px] text-muted">{sub}</div>}
+    </th>
+  );
 }
 
-export function sourceLabel(mock: boolean, termineSource: string) {
-  const meta = mock ? "Meta Ads (Export)" : "Meta Ads";
-  if (termineSource === "sheet") return `${meta} und Lead-Liste in Google Sheets`;
-  if (termineSource === "fixture") return `${meta} und lokale Kopie der Lead-Liste`;
-  return meta;
-}
-
-export function rangeText(r: DateRange) {
-  return `${fmtDate(r.since)} bis ${fmtDate(r.until)}`;
+export function Footer({ subtitle, source }: { subtitle: string; source: string }) {
+  return (
+    <footer className="py-8 text-center text-xs text-muted">
+      Performance Dashboard P8 · {subtitle} · Datenquelle: {source}
+    </footer>
+  );
 }
 
 const STATUS: Record<string, { text: string; dot: string }> = {
-  ACTIVE: { text: "Läuft", dot: "bg-ok" },
-  PAUSED: { text: "Pausiert", dot: "bg-warn" },
-  CAMPAIGN_PAUSED: { text: "Kampagne pausiert", dot: "bg-warn" },
-  ADSET_PAUSED: { text: "Anzeigengruppe pausiert", dot: "bg-warn" },
+  ACTIVE: { text: "Aktiv", dot: "bg-emerald" },
+  PAUSED: { text: "Pausiert", dot: "bg-amber" },
+  CAMPAIGN_PAUSED: { text: "Kampagne pausiert", dot: "bg-amber" },
+  ADSET_PAUSED: { text: "Anzeigengruppe pausiert", dot: "bg-amber" },
   INACTIVE: { text: "Inaktiv", dot: "bg-muted" },
   NOT_DELIVERING: { text: "Keine Auslieferung", dot: "bg-muted" },
 };

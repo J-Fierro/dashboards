@@ -44,7 +44,7 @@ export const clients: ClientConfig[] = [
         level: "adset",
         metaId: "120253887576570169", // ad set "Neue Videos - Copy"
         leadSheet: {
-          spreadsheetId: "1xoxjJs9KPhmOdbBFqx2mdwDZ-Yx8vihVFUKiBr2G1Y4",
+          spreadsheetId: "1EkIGcwdqHn_klxyxV_gcSqw0mpMZL6zMkFLvn77FQss",
           range: "Tabellenblatt1!A:M",
           fixture: "mister-marketing-leads.json",
         },
