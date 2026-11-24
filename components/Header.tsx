@@ -25,6 +25,7 @@ export function Header({ subtitle, range, rangeLocked }: { subtitle: string; ran
               <DateRangePicker range={range} locked={rangeLocked} />
             </Suspense>
             <RefreshButton />
+            <a href="/logout" className="text-xs text-white/50 hover:text-white">Abmelden</a>
           </div>
         )}
       </div>
