@@ -47,9 +47,29 @@ Share each lead sheet with the service account's email (Viewer is enough). Colum
 
 Termine whose ad name matches no ad are shown as "nicht zugeordnet" on the campaign page.
 
+## Access
+
+Each client opens their dashboard through a private link:
+
+```
+https://<domain>/<client-slug>?key=<ACCESS_CLIENT_SLUG>
+```
+
+The first visit replaces the key with a signed, HTTP-only cookie valid for 90 days and removes the key from the address bar. A client's cookie opens only that client's pages. `ADMIN_TOKEN` opens all dashboards and the client list at `/`.
+
+Environment variables (generate each value with `openssl rand -hex 32`):
+
+| Variable | Purpose |
+|---|---|
+| `SESSION_SECRET` | Signs the cookies. Without it, production denies everyone. |
+| `ADMIN_TOKEN` | P8 team link: `https://<domain>/?key=...` |
+| `ACCESS_MISTER_MARKETING` | Client link. One variable per client: `ACCESS_` + slug in capitals, dashes as underscores. |
+
+To revoke a client's link, change their variable in Vercel and redeploy. Old links and existing cookies stop working. Changing `SESSION_SECRET` logs everyone out.
+
 ## Adding a client
 
-Add an entry to `config/clients.ts`. Each group is one row on the overview: a Meta campaign (`level: "campaign"`) or a single ad set (`level: "adset"`), optionally with its own lead sheet.
+Add an entry to `config/clients.ts` and an `ACCESS_<SLUG>` variable in Vercel. Each group is one row on the overview: a Meta campaign (`level: "campaign"`) or a single ad set (`level: "adset"`), optionally with its own lead sheet.
 
 ## Structure
 
