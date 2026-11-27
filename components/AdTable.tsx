@@ -49,7 +49,9 @@ export function AdTable({ ads, total, totalTermine }: { ads: AdRow[]; total: Met
   }, [ads, sort]);
 
   const click = (key: Key) => setSort((s) => ({ key, dir: s.key === key ? (s.dir === 1 ? -1 : 1) : key === "name" ? 1 : -1 }));
-  const arrow = (key: Key) => (sort.key === key ? (sort.dir === 1 ? " ↑" : " ↓") : "");
+  // Active column shows its direction; the others a faint ↕ so they read as clickable.
+  const arrow = (key: Key) =>
+    sort.key === key ? (sort.dir === 1 ? " ↑" : " ↓") : <span className="opacity-30" aria-hidden> ↕</span>;
 
   return (
     <div className="overflow-x-auto">
@@ -57,11 +59,11 @@ export function AdTable({ ads, total, totalTermine }: { ads: AdRow[]; total: Met
         <thead className="border-y border-line bg-page/60">
           <tr>
             <Th label="Anzeige" align="left">
-              <button onClick={() => click("name")} className="uppercase hover:text-violet">Anzeige{arrow("name")}</button>
+              <button onClick={() => click("name")} className="cursor-pointer uppercase hover:text-violet">Anzeige{arrow("name")}</button>
             </Th>
             {COLS.map((c) => (
               <Th key={c.key} label={c.label} sub={c.sub || undefined}>
-                <button onClick={() => click(c.key)} className="whitespace-nowrap uppercase hover:text-violet">{c.label}{arrow(c.key)}</button>
+                <button onClick={() => click(c.key)} className="cursor-pointer whitespace-nowrap uppercase hover:text-violet">{c.label}{arrow(c.key)}</button>
               </Th>
             ))}
           </tr>

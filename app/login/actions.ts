@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { adminPasswordHash, getClient } from "@/config/clients";
+import { getClient } from "@/config/clients";
 import { ADMIN_COOKIE, checkPassword, clientCookie, cookieOptions, sessionValue } from "@/lib/auth";
 
 /** Only allow redirects back into this site. */
@@ -17,12 +17,12 @@ export async function login(_: { error?: string } | undefined, form: FormData) {
   const client = slug ? getClient(slug) : undefined;
   const jar = await cookies();
 
-  if (client && checkPassword(password, client.passwordHash)) {
-    jar.set(clientCookie(slug), sessionValue(slug, client.passwordHash!), cookieOptions);
+  if (client && checkPassword(password, slug)) {
+    jar.set(clientCookie(slug), sessionValue(slug)!, cookieOptions);
     redirect(next);
   }
-  if (checkPassword(password, adminPasswordHash)) {
-    jar.set(ADMIN_COOKIE, sessionValue("admin", adminPasswordHash!), cookieOptions);
+  if (checkPassword(password, "admin")) {
+    jar.set(ADMIN_COOKIE, sessionValue("admin")!, cookieOptions);
     redirect(next);
   }
 

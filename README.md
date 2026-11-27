@@ -50,23 +50,22 @@ Termine that can't be assigned are shown as "nicht zugeordnet" on the campaign p
 
 ## Login
 
-Each client has one password; the P8 admin password opens every dashboard and the client list at `/`. Passwords are stored only as scrypt hashes in `config/clients.ts`.
+Passwords are environment variables in Vercel (Settings → Environment Variables), so they can be looked up and changed there:
 
-After login, a signed HTTP-only cookie keeps the browser logged in. It is renewed on every visit and only expires after 90 days without a visit. A client's login opens only that client's pages. "Abmelden" in the header logs out.
+| Variable | Opens |
+|---|---|
+| `ADMIN_PASSWORD` | every dashboard and the client list at `/` (P8 team) |
+| `PASSWORD_<CLIENT_SLUG>` | only that client's pages, e.g. `PASSWORD_MISTER_MARKETING` for `/mister-marketing` |
 
-To set or change a password:
+The slug is upper-cased and `-` becomes `_`. A client without its variable can't log in; only the admin can open it. After adding or changing a password, redeploy so it takes effect. Changing a password logs out everyone who used the old one.
 
-```bash
-npm run hash-password -- "new password"
-```
+After login, a signed HTTP-only cookie keeps the browser logged in. It is renewed on every visit and only expires after 90 days without a visit. "Abmelden" in the header logs out.
 
-Paste the output as `passwordHash` for the client (or `adminPasswordHash`) and push. Changing a password logs out everyone who used the old one.
-
-`SESSION_SECRET` (optional, Vercel env) is mixed into the cookie signature. Changing it logs everyone out.
+`SESSION_SECRET` (optional) is mixed into the cookie signature. Changing it logs everyone out.
 
 ## Adding a client
 
-Add an entry to `config/clients.ts`, including a `passwordHash`. Each group is one row on the overview: a Meta campaign (`level: "campaign"`) or a single ad set (`level: "adset"`), optionally with its own lead sheet.
+Add an entry to `config/clients.ts` and a `PASSWORD_<SLUG>` variable in Vercel. Each group is one row on the overview: a Meta campaign (`level: "campaign"`) or a single ad set (`level: "adset"`), optionally with its own lead sheet.
 
 ## Structure
 

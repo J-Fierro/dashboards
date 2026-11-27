@@ -61,7 +61,7 @@ export default async function GroupPage({ params, searchParams }: Props) {
           title={`${row.label} · Anzeigen`}
           subtitle={
             <>
-              {ads.length} Anzeigen · {row.metaName} · <span className="text-violet">Spalte anklicken zum Sortieren</span>
+              {ads.length} Anzeigen · {row.metaName} · <span className="text-violet">Zum Sortieren auf einen Spaltentitel klicken</span>
             </>
           }
           badges={<SourceBadges mock={!!fixed} />}
