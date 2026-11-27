@@ -25,21 +25,40 @@ function toIsoDay(value: string): string | null {
   return null;
 }
 
+/** Digits only, so "120253887564880169" and "'120253887564880169" both work. */
+const toAdId = (value: string) => value.replace(/\D/g, "");
+
 /**
- * Counts rows marked "JA" in Terminbuchung inside the date range, and assigns
- * them to ads by name. Columns are found by header name, not position, since
- * the existing sheets don't all have the same column order.
+ * Counts rows marked "JA" in Terminbuchung inside the date range and assigns
+ * them to ads. Columns are found by header name, not position, since the
+ * existing sheets don't all have the same column order.
+ *
+ * Assignment uses the "Ad-ID" column. Rows without an ID fall back to the ad
+ * name, but only when exactly one ad in the group has that name; ambiguous or
+ * unknown names count as unmatched rather than guessing.
  */
-export function countTermine(values: string[][], range: DateRange, adNames: string[], source: TermineResult["source"]): TermineResult {
+export function countTermine(
+  values: string[][],
+  range: DateRange,
+  ads: { id: string; name: string }[],
+  source: TermineResult["source"],
+): TermineResult {
   const result: TermineResult = { total: 0, byAd: new Map(), unmatched: 0, source };
   if (values.length < 2) return result;
   const [header, ...rows] = values;
   const cDate = findCol(header, ["datum"]);
   const cTermin = findCol(header, ["terminbuchung", "termin"]);
+  const cAdId = findCol(header, ["ad-id", "ad id", "ad_id", "adid", "anzeigen-id"]);
   const cAd = findCol(header, ["ad", "anzeige"]);
   if (cTermin < 0) return result;
 
-  const known = new Set(adNames.map(normalizeAdName));
+  const ids = new Set(ads.map((a) => a.id));
+  const byName = new Map<string, string | null>(); // null = name used by several ads
+  for (const ad of ads) {
+    const key = normalizeAdName(ad.name);
+    byName.set(key, byName.has(key) ? null : ad.id);
+  }
+
   for (const row of rows) {
     if ((row[cTermin] ?? "").trim().toUpperCase() !== "JA") continue;
     if (cDate >= 0) {
@@ -47,8 +66,10 @@ export function countTermine(values: string[][], range: DateRange, adNames: stri
       if (!day || day < range.since || day > range.until) continue;
     }
     result.total++;
-    const ad = cAd >= 0 ? normalizeAdName(row[cAd] ?? "") : "";
-    if (ad && known.has(ad)) result.byAd.set(ad, (result.byAd.get(ad) ?? 0) + 1);
+
+    const rawId = cAdId >= 0 ? toAdId(row[cAdId] ?? "") : "";
+    const adId = rawId ? (ids.has(rawId) ? rawId : null) : cAd >= 0 ? (byName.get(normalizeAdName(row[cAd] ?? "")) ?? null) : null;
+    if (adId) result.byAd.set(adId, (result.byAd.get(adId) ?? 0) + 1);
     else result.unmatched++;
   }
   return result;

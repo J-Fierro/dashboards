@@ -1,5 +1,5 @@
-// Live Meta Marketing API source. Written ahead of time: set DATA_SOURCE=meta
-// and META_ACCESS_TOKEN (System User token with ads_read) to switch over.
+// Live Meta Marketing API source: active when DATA_SOURCE=meta.
+// Needs META_ACCESS_TOKEN with ads_read (user token for testing, System User token in production).
 import "server-only";
 import type { ClientConfig, GroupConfig } from "@/config/clients";
 import type { DateRange, MetaInsights } from "../types";
@@ -18,7 +18,7 @@ const INSIGHT_FIELDS = [
 ].join(",");
 
 function base() {
-  return `https://graph.facebook.com/${process.env.META_API_VERSION || "v25.0"}`;
+  return `https://graph.facebook.com/${process.env.META_API_VERSION || "v27.0"}`;
 }
 
 async function graph<T>(path: string, params: Record<string, string>): Promise<T> {

@@ -57,7 +57,7 @@ export interface DateRange {
 
 export interface TermineResult {
   total: number;
-  byAd: Map<string, number>; // normalized ad name -> count
+  byAd: Map<string, number>; // Meta ad ID -> count
   unmatched: number;
   source: "sheet" | "fixture" | "none";
 }

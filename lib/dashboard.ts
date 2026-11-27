@@ -3,18 +3,18 @@ import type { ClientConfig, GroupConfig } from "@/config/clients";
 import { toMetrics } from "./metrics";
 import { readLeadSheet } from "./sheets";
 import { getAds, getGroup } from "./sources";
-import { countTermine, normalizeAdName } from "./termine";
+import { countTermine } from "./termine";
 import type { AdRow, DateRange, GroupRow, TermineResult } from "./types";
 
-async function termineFor(group: GroupConfig, range: DateRange, adNames: string[]): Promise<TermineResult | null> {
+async function termineFor(group: GroupConfig, range: DateRange, ads: { id: string; name: string }[]): Promise<TermineResult | null> {
   if (!group.leadSheet) return null;
   const { values, source } = await readLeadSheet(group.leadSheet);
-  return countTermine(values, range, adNames, source);
+  return countTermine(values, range, ads, source);
 }
 
 export async function getGroupDetail(client: ClientConfig, group: GroupConfig, range: DateRange) {
   const [data, ads] = await Promise.all([getGroup(client, group, range), getAds(client, group, range)]);
-  const termine = await termineFor(group, range, ads.map((a) => a.name));
+  const termine = await termineFor(group, range, ads);
 
   const row: GroupRow = {
     slug: group.slug,
@@ -32,7 +32,7 @@ export async function getGroupDetail(client: ClientConfig, group: GroupConfig, r
     status: ad.status,
     thumbnailUrl: ad.thumbnailUrl,
     metrics: toMetrics(ad.insights, client.leadActionType),
-    termine: termine?.byAd.get(normalizeAdName(ad.name)) ?? 0,
+    termine: termine?.byAd.get(ad.id) ?? 0,
   }));
 
   return { row, ads: adRows, termine };

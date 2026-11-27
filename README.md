@@ -31,11 +31,11 @@ The export has no link-click column, so the script derives link clicks from CTR 
 
 ### Going live with Meta
 
-1. Get a System User token with `ads_read` on the ad account.
-2. In Vercel, set `DATA_SOURCE=meta` and `META_ACCESS_TOKEN`.
-3. Fill in `adAccountId` in `config/clients.ts`.
+1. Put a token with `ads_read` in Vercel as `META_ACCESS_TOKEN`. For testing a long-lived user token works (it expires after ~60 days); for production use a System User token from P8's business portfolio, which doesn't expire.
+2. In Vercel, set `DATA_SOURCE=meta` and redeploy.
+3. Each client needs `adAccountId` in `config/clients.ts`, and each group a hardcoded `metaId` (ad set or campaign ID). Never match by name: Meta allows several ad sets with the same name.
 
-The API code is in `lib/sources/meta.ts`. Requests are cached for 5 minutes.
+Leads are counted from one action type per client (`leadActionType`, default `onsite_conversion.lead_grouped` = Instant Form leads, which is what Ads Manager shows as "Results"). The API code is in `lib/sources/meta.ts`. Requests are cached for 5 minutes.
 
 ### Lead sheets
 
@@ -43,9 +43,10 @@ Share each lead sheet with the service account's email (Viewer is enough). Colum
 
 - `Datum`: only leads inside the selected date range count
 - `Terminbuchung`: `JA` counts as one Termin
-- `Ad`: assigns the Termin to an ad. Copy suffixes such as "- Kopie" or "(Copy 2)" are ignored when matching.
+- `Ad-ID`: the Meta ad ID the lead came from. This is what assigns a Termin to an ad. The lead form automation should write it for every new lead (it's `ad_id` in the Meta lead payload).
+- `Ad`: fallback for rows without an Ad-ID. The name is only used when exactly one ad in the group has it (copy suffixes like "- Kopie" are ignored); otherwise the Termin counts as unmatched.
 
-Termine whose ad name matches no ad are shown as "nicht zugeordnet" on the campaign page.
+Termine that can't be assigned are shown as "nicht zugeordnet" on the campaign page. They still count in the totals.
 
 ## Login
 
@@ -73,7 +74,7 @@ Add an entry to `config/clients.ts`, including a `passwordHash`. Each group is o
 config/clients.ts       clients, groups, lead sheets
 lib/sources/            mock.ts (CSV JSON) and meta.ts (live API), same output shape
 lib/metrics.ts          Meta insights -> normalized metrics
-lib/termine.ts          Termine counting and ad-name matching
+lib/termine.ts          Termine counting and ad matching (Ad-ID, name fallback)
 lib/sheets.ts           Google Sheets reader
 lib/dashboard.ts        combines everything per page
 app/[client]/           overview

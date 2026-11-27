@@ -39,10 +39,10 @@ export const clients: ClientConfig[] = [
   {
     slug: "mister-marketing",
     name: "Mister Marketing",
-    adAccountId: "act_TODO", // fill in once API access exists
+    adAccountId: "act_641018019021913", // "P8 Power" ad account
     mockFile: "mister-marketing.json",
     passwordHash: "scrypt$3100cb14c432f6be3711eb9b0fe91701$51dee954f9239fe62ae6f8efc9b5efe6231c161ef253c2fb0c55ed4158f66882",
-    leadActionType: "leadgen.other",
+    leadActionType: "onsite_conversion.lead_grouped", // Instant Form leads, = "Results" in Ads Manager
     groups: [
       {
         slug: "kampagne-1",

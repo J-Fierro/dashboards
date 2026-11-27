@@ -71,8 +71,8 @@ export default async function GroupPage({ params, searchParams }: Props) {
 
         {termine && termine.unmatched > 0 && (
           <p className="text-xs text-muted">
-            {termine.unmatched} {termine.unmatched === 1 ? "Termin konnte" : "Termine konnten"} keiner Anzeige zugeordnet werden. Der
-            Anzeigenname in der Lead-Liste passt zu keiner Anzeige dieser Kampagne.
+            {termine.unmatched} {termine.unmatched === 1 ? "Termin konnte" : "Termine konnten"} keiner Anzeige zugeordnet werden. Die
+            Ad-ID in der Lead-Liste fehlt oder gehört zu keiner Anzeige dieser Kampagne.
           </p>
         )}
       </main>
