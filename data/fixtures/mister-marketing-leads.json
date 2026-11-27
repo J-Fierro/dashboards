@@ -1,14 +1,14 @@
 {
-  "_note": "Fallback copy of the test lead sheet 'Mister Marketing – Leads (Testdaten)', reduced to the three columns the dashboard reads. Fictional data.",
+  "_note": "Fallback copy of the test lead sheet 'Mister Marketing – Leads (Testdaten)', reduced to the columns the dashboard reads. Fictional data.",
   "values": [
-    ["Datum", "Terminbuchung", "Ad"],
-    ["2026-11-08 09:42:17", "JA", "Video_02"],
-    ["2026-11-09 14:05:51", "NEIN", "Video_02"],
-    ["2026-11-11 18:27:03", "JA", "Video_03"],
-    ["2026-11-13 11:16:40", "NEIN", "Video_02"],
-    ["2026-11-15 20:48:12", "JA", "Video_02"],
-    ["2026-11-17 08:33:29", "NEIN", "Video_02"],
-    ["2026-11-19 16:59:44", "NEIN", "Video_03 - Kopie"],
-    ["2026-11-21 13:21:08", "NEIN", "Video_02"]
+    ["Datum", "Terminbuchung", "Ad", "gekauft"],
+    ["2026-11-08 09:42:17", "JA", "Video_02", "NEIN"],
+    ["2026-11-09 14:05:51", "NEIN", "Video_02", "NEIN"],
+    ["2026-11-11 18:27:03", "JA", "Video_03", "JA"],
+    ["2026-11-13 11:16:40", "NEIN", "Video_02", "NEIN"],
+    ["2026-11-15 20:48:12", "JA", "Video_02", "NEIN"],
+    ["2026-11-17 08:33:29", "NEIN", "Video_02", "NEIN"],
+    ["2026-11-19 16:59:44", "NEIN", "Video_03 - Kopie", "NEIN"],
+    ["2026-11-21 13:21:08", "NEIN", "Video_02", "NEIN"]
   ]
 }

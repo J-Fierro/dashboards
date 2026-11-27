@@ -24,6 +24,7 @@ export async function getGroupDetail(client: ClientConfig, group: GroupConfig, r
     dailyBudget: data.dailyBudget,
     metrics: toMetrics(data.insights, client.leadActionType),
     termine: termine?.total ?? null,
+    purchases: termine?.purchases ?? null,
   };
 
   const adRows: AdRow[] = ads.map((ad) => ({
@@ -49,6 +50,7 @@ export async function getOverview(client: ClientConfig, range: DateRange) {
   const linkClicks = sum((r) => r.metrics.linkClicks);
   const hasTermine = rows.some((r) => r.termine != null);
   const termine = sum((r) => r.termine ?? 0);
+  const hasPurchases = rows.some((r) => r.purchases != null);
 
   // Reach and frequency are deduplicated per group, so they aren't summed.
   const totals = {
@@ -63,6 +65,7 @@ export async function getOverview(client: ClientConfig, range: DateRange) {
     termine: hasTermine ? termine : null,
     costPerTermin: hasTermine && termine > 0 ? spend / termine : null,
     terminRate: hasTermine && leads > 0 ? (termine / leads) * 100 : null,
+    purchases: hasPurchases ? sum((r) => r.purchases ?? 0) : null,
   };
 
   const termineSource = details.find((d) => d.termine)?.termine?.source ?? "none";

@@ -43,6 +43,7 @@ Share each lead sheet with the service account's email (Viewer is enough). Colum
 
 - `Datum`: only leads inside the selected date range count
 - `Terminbuchung`: `JA` counts as one Termin
+- `gekauft`: `JA` counts as one purchase, shown as the last step of the conversion path ("Gekauft", with the Termin → Kauf rate). Counted by lead date, like the Termine. If a sheet has no `gekauft` column, the step is hidden.
 - `Ad-ID`: the Meta ad ID the lead came from. This is what assigns a Termin to an ad. The lead form automation should write it for every new lead (it's `ad_id` in the Meta lead payload).
 - `Ad`: fallback for rows without an Ad-ID. The name is only used when exactly one ad in the group has it (copy suffixes like "- Kopie" are ignored); otherwise the Termin counts as unmatched.
 

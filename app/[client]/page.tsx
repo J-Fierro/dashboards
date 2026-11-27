@@ -48,8 +48,8 @@ export default async function ClientOverview({ params, searchParams }: Props) {
           <KpiCard label="Ø CPM" value={fmtEur(totals.cpm)} sub="Kosten pro 1.000 Impressionen" accent="amber" />
         </section>
 
-        <Panel title="Conversion-Pfad" subtitle="Von der Impression bis zum gebuchten Termin">
-          <ConversionPath data={{ impressions: totals.impressions, linkClicks: totals.linkClicks, leads: totals.leads, termine: totals.termine }} />
+        <Panel title="Conversion-Pfad" subtitle={totals.purchases != null ? "Von der Impression bis zum Kauf" : "Von der Impression bis zum gebuchten Termin"}>
+          <ConversionPath data={{ impressions: totals.impressions, linkClicks: totals.linkClicks, leads: totals.leads, termine: totals.termine, purchases: totals.purchases }} />
         </Panel>
 
         <Panel

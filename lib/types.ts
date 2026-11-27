@@ -39,6 +39,7 @@ export interface GroupRow {
   dailyBudget: number | null; // EUR
   metrics: Metrics;
   termine: number | null;
+  purchases: number | null;
 }
 
 export interface AdRow {
@@ -59,5 +60,6 @@ export interface TermineResult {
   total: number;
   byAd: Map<string, number>; // Meta ad ID -> count
   unmatched: number;
+  purchases: number | null; // "gekauft" = JA; null if the sheet has no gekauft column
   source: "sheet" | "fixture" | "none";
 }

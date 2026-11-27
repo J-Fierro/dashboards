@@ -30,7 +30,8 @@ const toAdId = (value: string) => value.replace(/\D/g, "");
 
 /**
  * Counts rows marked "JA" in Terminbuchung inside the date range and assigns
- * them to ads. Columns are found by header name, not position, since the
+ * them to ads. Also counts "gekauft" = JA (purchases); null when the sheet has
+ * no such column. Columns are found by header name, not position, since the
  * existing sheets don't all have the same column order.
  *
  * Assignment uses the "Ad-ID" column. Rows without an ID fall back to the ad
@@ -43,14 +44,16 @@ export function countTermine(
   ads: { id: string; name: string }[],
   source: TermineResult["source"],
 ): TermineResult {
-  const result: TermineResult = { total: 0, byAd: new Map(), unmatched: 0, source };
+  const result: TermineResult = { total: 0, byAd: new Map(), unmatched: 0, purchases: null, source };
   if (values.length < 2) return result;
   const [header, ...rows] = values;
   const cDate = findCol(header, ["datum"]);
   const cTermin = findCol(header, ["terminbuchung", "termin"]);
   const cAdId = findCol(header, ["ad-id", "ad id", "ad_id", "adid", "anzeigen-id"]);
   const cAd = findCol(header, ["ad", "anzeige"]);
-  if (cTermin < 0) return result;
+  const cKauf = findCol(header, ["gekauft", "kauf"]);
+  if (cKauf >= 0) result.purchases = 0;
+  if (cTermin < 0 && cKauf < 0) return result;
 
   const ids = new Set(ads.map((a) => a.id));
   const byName = new Map<string, string | null>(); // null = name used by several ads
@@ -59,12 +62,17 @@ export function countTermine(
     byName.set(key, byName.has(key) ? null : ad.id);
   }
 
+  const isJa = (col: number, row: string[]) => col >= 0 && (row[col] ?? "").trim().toUpperCase() === "JA";
+
   for (const row of rows) {
-    if ((row[cTermin] ?? "").trim().toUpperCase() !== "JA") continue;
     if (cDate >= 0) {
       const day = toIsoDay(row[cDate] ?? "");
       if (!day || day < range.since || day > range.until) continue;
     }
+    // Purchases: "gekauft" = JA, counted by lead date like the Termine.
+    if (result.purchases != null && isJa(cKauf, row)) result.purchases++;
+
+    if (!isJa(cTermin, row)) continue;
     result.total++;
 
     const rawId = cAdId >= 0 ? toAdId(row[cAdId] ?? "") : "";

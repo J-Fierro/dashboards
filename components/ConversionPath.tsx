@@ -6,11 +6,19 @@ export interface PathInput {
   linkClicks: number;
   leads: number;
   termine: number | null;
+  /** null when the lead sheet has no "gekauft" column; the step is then hidden. */
+  purchases?: number | null;
 }
 
 const pct = (a: number | null, b: number) => (a != null && b > 0 ? (a / b) * 100 : null);
 
-/** Impression to booked appointment: the count at each step and the rate between steps. */
+// Static class names so Tailwind picks them up: boxes alternate with rate arrows.
+const GRID: Record<number, string> = {
+  4: "md:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr]",
+  5: "md:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr_auto_1fr]",
+};
+
+/** Impression to purchase: the count at each step and the rate between steps. */
 export function ConversionPath({ data }: { data: PathInput }) {
   const steps = [
     { label: "Impressionen", value: data.impressions },
@@ -23,9 +31,13 @@ export function ConversionPath({ data }: { data: PathInput }) {
     { value: pct(data.leads, data.linkClicks), label: "Klick → Lead" },
     { value: pct(data.termine, data.leads), label: "Lead → Termin" },
   ];
+  if (data.purchases != null) {
+    steps.push({ label: "Gekauft", value: data.purchases });
+    rates.push({ value: pct(data.purchases, data.termine ?? 0), label: "Termin → Kauf" });
+  }
 
   return (
-    <div className="grid grid-cols-1 gap-3 px-5 pb-5 md:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] md:items-center md:gap-0">
+    <div className={`grid grid-cols-1 gap-3 px-5 pb-5 ${GRID[steps.length]} md:items-center md:gap-0`}>
       {steps.map((s, i) => (
         <Fragment key={s.label}>
           <div className={`rounded-lg border px-4 py-3.5 ${i === steps.length - 1 ? "border-violet/25 bg-violet/[0.04]" : "border-line"}`}>

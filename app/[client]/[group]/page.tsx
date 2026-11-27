@@ -53,8 +53,8 @@ export default async function GroupPage({ params, searchParams }: Props) {
           <KpiCard label="Reichweite" value={fmtInt(m.reach)} sub={`Frequenz ${fmtDec(m.frequency)}`} accent="amber" />
         </section>
 
-        <Panel title="Conversion-Pfad" subtitle="Von der Impression bis zum gebuchten Termin">
-          <ConversionPath data={{ impressions: m.impressions, linkClicks: m.linkClicks, leads: m.leads, termine: row.termine }} />
+        <Panel title="Conversion-Pfad" subtitle={row.purchases != null ? "Von der Impression bis zum Kauf" : "Von der Impression bis zum gebuchten Termin"}>
+          <ConversionPath data={{ impressions: m.impressions, linkClicks: m.linkClicks, leads: m.leads, termine: row.termine, purchases: row.purchases }} />
         </Panel>
 
         <Panel
